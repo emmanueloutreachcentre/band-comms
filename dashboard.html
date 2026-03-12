@@ -889,48 +889,135 @@
       }
     }
 
-    @media (max-width: 768px) {
-      .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        transform: translateX(-100%);
-      }
+/* Responsive */
+@media (max-width: 768px) {
+  body {
+    height: 100%;
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+  }
 
-      .sidebar.open {
-        transform: translateX(0);
-      }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    z-index: 100;
+  }
 
-      .menu-toggle {
-        display: block;
-      }
+  .sidebar.open {
+    transform: translateX(0);
+  }
 
-      .header-profile span {
-        display: none;
-      }
+  .menu-toggle {
+    display: block;
+  }
 
-      .chat-header {
-        padding: 16px;
-      }
+  .header-profile span {
+    display: none;
+  }
 
-      .chat-messages {
-        padding: 16px;
-      }
+  /* Mobile viewport fixes */
+  .app-container {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
 
-      .message {
-        max-width: 85%;
-      }
+  .main-content {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
 
-      .presets-panel {
-        left: 16px;
-        right: 16px;
-      }
+  .content-area {
+    height: calc(100vh - 60px);
+    height: calc(-webkit-fill-available - 60px);
+  }
 
-      .team-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+  .chat-view {
+    height: 100%;
+    position: relative;
+  }
+
+  .chat-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px;
+    padding-bottom: 100px; /* Space for fixed input */
+  }
+
+  .chat-input-area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border-color);
+    z-index: 50;
+  }
+
+  .input-container {
+    max-width: 100%;
+  }
+
+  .presets-panel {
+    position: fixed;
+    bottom: 80px;
+    left: 16px;
+    right: 16px;
+    max-height: 50vh;
+  }
+
+  .chat-header {
+    padding: 16px;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+  }
+
+  .message {
+    max-width: 85%;
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr;
+    padding-bottom: 20px;
+  }
+
+  .presets-config {
+    padding: 20px;
+    padding-bottom: 100px;
+    overflow-y: auto;
+  }
+
+  .team-view {
+    padding: 20px;
+    padding-bottom: 100px;
+    overflow-y: auto;
+  }
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .chat-messages {
+    padding-bottom: 120px;
+  }
+  
+  .chat-input-area {
+    padding-bottom: 30px;
+  }
+}
 
     /* Loading State */
     .loading {
