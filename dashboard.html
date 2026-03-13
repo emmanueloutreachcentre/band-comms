@@ -1041,6 +1041,24 @@
       margin-bottom: 16px;
       opacity: 0.3;
     }
+
+    .sidebar-credit {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 24px;
+      text-align: center;
+      padding-bottom: 2%;
+    }
+
+    .sidebar-credit a {
+      color: #c7c9ff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .sidebar-credit a:hover {
+      color: #ffffff;
+    }
   </style>
 </head>
 <body>
@@ -1078,7 +1096,10 @@
           </div>
         </div>
       </nav>
-
+      <div class="sidebar-credit">
+        Developed by 
+        <a href="https://icarusdigi.github.io/site/" target="_blank">IDM</a>
+      </div>
       <div class="sidebar-footer">
         <div class="user-profile">
           <img src="" alt="User" class="user-avatar" id="userAvatar">
@@ -1271,6 +1292,22 @@
       initializeApp();
     });
 
+    //notification permission
+    function requestNotificationPermission() {
+  if (!("Notification" in window)) {
+    console.log("This browser does not support notifications.");
+    return;
+  }
+
+  if (Notification.permission === "default") {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        console.log("Notifications enabled");
+      }
+    });
+  }
+}
+
     function updateUserUI(user) {
       const name = user.displayName || user.email.split('@')[0];
       const photo = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff`;
@@ -1282,6 +1319,9 @@
     }
 
     function initializeApp() {
+
+      requestNotificationPermission();
+
       loadMessages();
       loadNotes();
       loadPresets();
@@ -1336,6 +1376,23 @@
 
     function displayMessage(message) {
       const isSent = message.senderId === currentUser.uid;
+
+      // Show notification if message is from someone else
+      if (
+        message.senderId !== currentUser.uid &&
+        Notification.permission === "granted" &&
+        document.hidden
+      ) {
+        const notification = new Notification("EOC Band Chat", {
+          body: `${message.senderName}: ${message.text}`,
+          icon: "./assets/logo/eoc_LogoH.png"
+        });
+
+        notification.onclick = () => {
+          window.focus();
+        };
+      }
+
       const div = document.createElement('div');
       div.className = `message ${isSent ? 'sent' : 'received'} ${message.isPreset ? 'preset' : ''}`;
       
