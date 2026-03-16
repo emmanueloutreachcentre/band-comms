@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="icon" type="image/png" href="./assets/logo/eoc_LogoH.png">
+  <link rel="manifest" href="manifest.json">
 
   <title>EOC Live Band Chat - Dashboard</title>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -1183,14 +1184,15 @@
             <span>Team</span>
           </div>
         </div>
-
         <!-- Install App Button -->
-        <div class="nav-section">
-          <div class="nav-section-title">App</div>
-
-          <button id="installAppBtn" class="install-btn" style="display:none;">
-            📲 Install App
-          </button>
+         <div class="nav-section-title">App</div>  
+        <div class="nav-item" id="nav-install" onclick="installApp()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14">
+            </path>
+          </svg>
+          <span>Install App</span>
         </div>
 
       </nav>
@@ -1769,44 +1771,52 @@
   </script>
 
   <script>
-    let deferredPrompt;
-    const installBtn = document.getElementById("installAppBtn");
+  let deferredPrompt;
+  const installBtn = document.getElementById("nav-install");
+  const appSectionTitle = document.getElementById("nav-app-section");
 
-    // Capture install event
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
+  // Capture install event
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
 
-      // Show install button
-      if (installBtn) {
-        installBtn.style.display = "block";
-      }
-    });
+    // Show install button and section if needed
+    if (installBtn) installBtn.style.display = "flex"; // or "block" if you prefer
+    if (appSectionTitle) appSectionTitle.style.display = "block";
+  });
 
-    // Install button click
-    installBtn?.addEventListener("click", async () => {
-      if (!deferredPrompt) return;
+  // Install button click
+  installBtn?.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
 
-      deferredPrompt.prompt();
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
 
-      const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") {
+      console.log("✅ App installed");
+      hideInstallUI();
+    } else {
+      console.log("❌ Install dismissed");
+    }
 
-      if (outcome === "accepted") {
-        console.log("✅ App installed");
-      } else {
-        console.log("❌ Install dismissed");
-      }
+    deferredPrompt = null;
+  });
 
-      deferredPrompt = null;
-      installBtn.style.display = "none";
-    });
+  // Hide button and section after install
+  window.addEventListener("appinstalled", () => {
+    console.log("PWA installed");
+    hideInstallUI();
+  });
 
-    // Hide button after install
-    window.addEventListener("appinstalled", () => {
-      console.log("PWA installed");
-      installBtn.style.display = "none";
-    });
-  </script>
+  function hideInstallUI() {
+    if (installBtn) installBtn.style.display = "none";
+    if (appSectionTitle) appSectionTitle.style.display = "none";
+  }
+
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    hideInstallUI();
+  }
+</script>
 
 </body>
 </html>
