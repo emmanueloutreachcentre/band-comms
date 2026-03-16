@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="icon" type="image/png" href="./assets/logo/eoc_LogoH.png">
+
   <title>EOC Live Band Chat - Dashboard</title>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -1098,6 +1101,23 @@
       color: #ffffff;
     }
 
+    .install-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .install-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
     @keyframes messageIn {
       from {
         opacity: 0;
@@ -1163,6 +1183,16 @@
             <span>Team</span>
           </div>
         </div>
+
+        <!-- Install App Button -->
+        <div class="nav-section">
+          <div class="nav-section-title">App</div>
+
+          <button id="installAppBtn" class="install-btn" style="display:none;">
+            📲 Install App
+          </button>
+        </div>
+
       </nav>
       <div class="sidebar-credit">
         Developed by 
@@ -1737,5 +1767,46 @@
       }
     });
   </script>
+
+  <script>
+    let deferredPrompt;
+    const installBtn = document.getElementById("installAppBtn");
+
+    // Capture install event
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      // Show install button
+      if (installBtn) {
+        installBtn.style.display = "block";
+      }
+    });
+
+    // Install button click
+    installBtn?.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+
+      deferredPrompt.prompt();
+
+      const { outcome } = await deferredPrompt.userChoice;
+
+      if (outcome === "accepted") {
+        console.log("✅ App installed");
+      } else {
+        console.log("❌ Install dismissed");
+      }
+
+      deferredPrompt = null;
+      installBtn.style.display = "none";
+    });
+
+    // Hide button after install
+    window.addEventListener("appinstalled", () => {
+      console.log("PWA installed");
+      installBtn.style.display = "none";
+    });
+  </script>
+
 </body>
 </html>
